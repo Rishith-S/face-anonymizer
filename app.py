@@ -51,11 +51,15 @@ def get_base64_image(image_path):
     return f"data:image/png;base64,{b64}"
 
 # ---- Load MediaPipe Models ----
-base_options = python.BaseOptions(model_asset_path="blaze_face_short_range.tflite")
+base_options = python.BaseOptions(
+    model_asset_path="blaze_face_short_range.tflite",
+    delegate=python.BaseOptions.Delegate.CPU
+)
 options = vision.FaceDetectorOptions(base_options=base_options)
 detector = vision.FaceDetector.create_from_options(options)
 
 mp_face_mesh = mp.solutions.face_mesh
+
 face_mesh = mp_face_mesh.FaceMesh(
     static_image_mode=True,
     max_num_faces=20,
@@ -130,29 +134,32 @@ st.markdown('</div>', unsafe_allow_html=True)
 uploaded = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
 
 if uploaded:
-    file_name = uploaded.name.split('.')[0]
-    file_type = uploaded.type
-    file_bytes = np.asarray(bytearray(uploaded.read()), dtype=np.uint8)
-    image_bgr = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+    with st.spinner("Processing image..."):
+        file_name = uploaded.name.split('.')[0]
+        file_type = uploaded.type
+        file_bytes = np.asarray(bytearray(uploaded.read()), dtype=np.uint8)
+        image_bgr = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
 
-    if anonymization_type == "Face-Blur":
-        mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB))
-        detection_result = detector.detect(mp_image)
-        annotated_image = blur_faces(image_bgr, detection_result)
-    else:
-        facemesh_results = face_mesh.process(cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB))
-        annotated_image = draw_scribbled_eye_lines(image_bgr, facemesh_results)
+        if anonymization_type == "Face-Blur":
+            mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB))
+            detection_result = detector.detect(mp_image)
+            annotated_image = blur_faces(image_bgr, detection_result)
+        else:
+            facemesh_results = face_mesh.process(cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB))
+            annotated_image = draw_scribbled_eye_lines(image_bgr, facemesh_results)
 
-    annotated_rgb = cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB)
+        annotated_rgb = cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB)
 
-    st.image(annotated_rgb, caption="Anonymized Image")
+        st.image(annotated_rgb, caption="Anonymized Image")
 
-    ext = ".png" if file_type == "image/png" else ".jpg"
-    success, buffer = cv2.imencode(ext, cv2.cvtColor(annotated_rgb, cv2.COLOR_RGB2BGR))
-    if success:
-        st.download_button(
-            label="Download Image",
-            data=buffer.tobytes(),
-            file_name=f'{file_name}-{anonymization_type}{ext}',
-            mime=file_type
-        )
+        st.toast("Image processed successfully 🎉")
+
+        ext = ".png" if file_type == "image/png" else ".jpg"
+        success, buffer = cv2.imencode(ext, cv2.cvtColor(annotated_rgb, cv2.COLOR_RGB2BGR))
+        if success:
+            st.download_button(
+                label="Download Image",
+                data=buffer.tobytes(),
+                file_name=f'{file_name}-{anonymization_type}{ext}',
+                mime=file_type
+            )
