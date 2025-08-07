@@ -1,7 +1,8 @@
 # Red Eye Line - Face Anonymization Tool
-
-<img width="1440" height="740" alt="Screenshot 2025-08-06 at 10 18 35 PM" src="https://github.com/user-attachments/assets/08852f30-2aa3-414b-a4a0-9e9f27fc35d7" />
-<img width="1440" height="737" alt="Screenshot 2025-08-06 at 10 18 58 PM" src="https://github.com/user-attachments/assets/60e606ee-3d86-402d-a256-1cb0cc699dde" />
+<div style="display: flex; flex-direction: row;">
+   <img width="500" height="500" alt="Screenshot 2025-08-06 at 10 18 35 PM" src="https://github.com/user-attachments/assets/08852f30-2aa3-414b-a4a0-9e9f27fc35d7" />
+   <img width="500" height="500" alt="Screenshot 2025-08-06 at 10 18 58 PM" src="https://github.com/user-attachments/assets/60e606ee-3d86-402d-a256-1cb0cc699dde" />
+</div>
 
 A web-based application for real-time face anonymization using MediaPipe's face detection and mesh capabilities. This tool provides two anonymization techniques: face blurring and eye covering.
 
