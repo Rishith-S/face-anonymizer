@@ -145,7 +145,7 @@ if uploaded:
 
     annotated_rgb = cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB)
 
-    st.image(annotated_rgb, caption="Anonymized Image", use_column_width=True)
+    st.image(annotated_rgb, caption="Anonymized Image")
 
     ext = ".png" if file_type == "image/png" else ".jpg"
     success, buffer = cv2.imencode(ext, cv2.cvtColor(annotated_rgb, cv2.COLOR_RGB2BGR))
